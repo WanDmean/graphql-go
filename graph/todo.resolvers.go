@@ -13,6 +13,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+type TodoCollection struct {
+	ID     primitive.ObjectID
+	Text   string
+	Done   bool
+	UserID primitive.ObjectID
+}
+
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
 	collection := database.GetCollection("todos")
 	UserObjectID, err := primitive.ObjectIDFromHex(input.UserID)
@@ -20,9 +27,9 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 		log.Fatal(err)
 	}
 	res, err := collection.InsertOne(ctx, bson.D{
-		{"text", input.Text},
-		{"done", input.Done},
-		{"_user", UserObjectID},
+		{Key: "text", Value: input.Text},
+		{Key: "done", Value: input.Done},
+		{Key: "_user", Value: UserObjectID},
 	})
 	if err != nil {
 		log.Fatal(err.Error())
@@ -42,7 +49,7 @@ func (r *queryResolver) Todos(ctx context.Context, userID string) ([]*model.Todo
 		log.Fatal(err)
 	}
 	cur, err := collection.Find(ctx, bson.D{
-		{"_user", UserObjectID},
+		{Key: "_user", Value: UserObjectID},
 	})
 	if err != nil {
 		log.Fatal(err)
