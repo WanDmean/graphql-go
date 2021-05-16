@@ -12,7 +12,7 @@ input NewTodo {
 }
 
 extend type Query {
-  todos: [Todo!]!
+  todos(userId: ID!): [Todo!]!
 }
 
 extend type Mutation {

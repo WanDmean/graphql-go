@@ -16,7 +16,7 @@ import (
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
-	userCollection := database.GetCollection("users")
+	collection := database.GetCollection("users")
 
 	// hash password before insert into database
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
@@ -25,7 +25,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 	}
 	input.Password = string(hashedPassword)
 
-	res, err := userCollection.InsertOne(ctx, input)
+	res, err := collection.InsertOne(ctx, input)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -38,12 +38,12 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 }
 
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
-	userCollection := database.GetCollection("users")
+	collection := database.GetCollection("users")
 	ObjectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		log.Fatal(err)
 	}
-	res := userCollection.FindOne(ctx, bson.M{"_id": ObjectID})
+	res := collection.FindOne(ctx, bson.M{"_id": ObjectID})
 	user := model.User{}
 	res.Decode(&user)
 	return &user, nil
