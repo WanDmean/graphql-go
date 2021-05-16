@@ -5,22 +5,48 @@ package graph
 
 import (
 	"context"
-	"fmt"
+	"log"
 
 	"github.com/WanDmean/graphql-go/graph/generated"
 	"github.com/WanDmean/graphql-go/graph/model"
+	"github.com/WanDmean/graphql-go/src/database"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	userCollection := database.GetCollection("users")
+
+	// hash password before insert into database
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+	if err != nil {
+		log.Fatal(err)
+	}
+	input.Password = string(hashedPassword)
+
+	res, err := userCollection.InsertOne(ctx, input)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	return &model.User{
+		ID:       res.InsertedID.(primitive.ObjectID).Hex(),
+		Name:     input.Name,
+		Email:    input.Email,
+		Password: "",
+	}, nil
 }
 
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
-func (r *userResolver) ID(ctx context.Context, obj *model.User) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	userCollection := database.GetCollection("users")
+	ObjectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	res := userCollection.FindOne(ctx, bson.M{"_id": ObjectID})
+	user := model.User{}
+	res.Decode(&user)
+	return &user, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
@@ -29,9 +55,5 @@ func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResol
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
-// User returns generated.UserResolver implementation.
-func (r *Resolver) User() generated.UserResolver { return &userResolver{r} }
-
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-type userResolver struct{ *Resolver }
