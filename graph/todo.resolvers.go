@@ -13,13 +13,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type TodoCollection struct {
-	ID     primitive.ObjectID
-	Text   string
-	Done   bool
-	UserID primitive.ObjectID
-}
-
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
 	collection := database.GetCollection("todos")
 	UserObjectID, err := primitive.ObjectIDFromHex(input.UserID)
