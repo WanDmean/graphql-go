@@ -17,5 +17,6 @@ func Env(key string) string {
 }
 
 var (
-	PORT = Env("PORT")
+	PORT      = Env("PORT")
+	MONGO_URI = Env("MONGO_URI")
 )
