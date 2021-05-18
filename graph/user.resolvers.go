@@ -5,48 +5,18 @@ package graph
 
 import (
 	"context"
-	"log"
 
 	"github.com/WanDmean/graphql-go/graph/generated"
 	"github.com/WanDmean/graphql-go/graph/model"
-	"github.com/WanDmean/graphql-go/src/database"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/WanDmean/graphql-go/src/pkg/users"
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
-	collection := database.GetCollection("users")
-
-	// hash password before insert into database
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
-	if err != nil {
-		log.Fatal(err)
-	}
-	input.Password = string(hashedPassword)
-
-	res, err := collection.InsertOne(ctx, input)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	return &model.User{
-		ID:       res.InsertedID.(primitive.ObjectID).Hex(),
-		Name:     input.Name,
-		Email:    input.Email,
-		Password: "",
-	}, nil
+	return users.Save(ctx, input)
 }
 
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
-	collection := database.GetCollection("users")
-	ObjectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		log.Fatal(err)
-	}
-	res := collection.FindOne(ctx, bson.M{"_id": ObjectID})
-	user := model.User{}
-	res.Decode(&user)
-	return &user, nil
+	return users.FindById(ctx, id)
 }
 
 // Mutation returns generated.MutationResolver implementation.
