@@ -17,7 +17,7 @@ func GetCollection(name string) *mongo.Collection {
 	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(config.MONGO_URI))
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal(err)
 	}
 	collection := client.Database(config.DATABASE).Collection(name)
 	return collection
@@ -28,7 +28,7 @@ func ListDB() {
 	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(config.MONGO_URI))
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal(err)
 	}
 	databases, err := client.ListDatabaseNames(ctx, bson.M{})
 	if err != nil {
