@@ -2,6 +2,11 @@
 
 package model
 
+type Login struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 type NewTodo struct {
 	Text   string `json:"text"`
 	Done   bool   `json:"done"`
@@ -9,6 +14,12 @@ type NewTodo struct {
 }
 
 type NewUser struct {
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type Register struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
