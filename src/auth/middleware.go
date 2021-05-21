@@ -26,7 +26,7 @@ func Middleware() func(http.Handler) http.Handler {
 
 			// validate jwt token
 			tokenStr := header
-			userId, err := ParseToken(tokenStr)
+			userId, err := users.ParseToken(tokenStr)
 			if err != nil {
 				http.Error(w, "Invalid token", http.StatusForbidden)
 				return
