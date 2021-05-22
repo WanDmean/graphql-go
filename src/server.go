@@ -15,8 +15,6 @@ import (
 )
 
 func main() {
-	port := config.PORT
-
 	/* create router with chi */
 	router := chi.NewRouter()
 
@@ -25,6 +23,12 @@ func main() {
 
 	/* init database */
 	database.InitDB()
+
+	/* add rest api register and login */
+	router.Route("/api", func(r chi.Router) {
+		r.Post("/register", auth.Register)
+		r.Post("/login", auth.Login)
+	})
 
 	/* exec graphq schema and create server handler */
 	executableSchema := generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}})
@@ -35,8 +39,8 @@ func main() {
 	router.Handle("/query", server)
 
 	/* logging on start and listen */
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	err := http.ListenAndServe(":"+port, router)
+	log.Printf("connect to http://localhost:%s/ for GraphQL playground", config.PORT)
+	err := http.ListenAndServe(":"+config.PORT, router)
 	if err != nil {
 		panic(err)
 	}
