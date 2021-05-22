@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/WanDmean/graphql-go/graph/model"
 	"github.com/WanDmean/graphql-go/src/pkg/users"
 )
 
@@ -44,7 +45,7 @@ func Middleware() func(http.Handler) http.Handler {
 }
 
 // ForContext finds the user from the context. REQUIRES Middleware to have run.
-func ForContext(ctx context.Context) *users.UserType {
-	raw, _ := ctx.Value(userCtxKey).(*users.UserType)
+func ForContext(ctx context.Context) *model.User {
+	raw, _ := ctx.Value(userCtxKey).(*model.User)
 	return raw
 }

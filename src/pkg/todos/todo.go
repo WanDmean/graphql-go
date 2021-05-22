@@ -2,18 +2,18 @@ package todos
 
 import (
 	"context"
-	"log"
+	"fmt"
 
 	"github.com/WanDmean/graphql-go/graph/model"
 	"github.com/WanDmean/graphql-go/src/database"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func Save(ctx context.Context, input model.NewTodo) *model.Todo {
+func Save(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
 	collection := database.GetCollection("todos")
 	UserObjectID, err := primitive.ObjectIDFromHex(input.UserID)
 	if err != nil {
-		log.Fatal(err)
+		return &model.Todo{}, fmt.Errorf("invalid object id")
 	}
 	res, err := collection.InsertOne(ctx, &TodoType{
 		UserID: UserObjectID,
@@ -21,34 +21,34 @@ func Save(ctx context.Context, input model.NewTodo) *model.Todo {
 		Text:   input.Text,
 	})
 	if err != nil {
-		log.Fatal(err.Error())
+		return &model.Todo{}, err
 	}
 	return &model.Todo{
 		ID:     res.InsertedID.(primitive.ObjectID).Hex(),
 		Text:   input.Text,
 		Done:   input.Done,
 		UserID: input.UserID,
-	}
+	}, nil
 }
 
-func All(ctx context.Context, userID string) []*model.Todo {
+func All(ctx context.Context, userID string) ([]*model.Todo, error) {
 	collection := database.GetCollection("todos")
 	UserObjectID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		log.Fatal(err)
+		return []*model.Todo{}, fmt.Errorf("invalid object id")
 	}
 	cur, err := collection.Find(ctx, &TodoType{
 		UserID: UserObjectID,
 	})
 	if err != nil {
-		log.Fatal(err)
+		return []*model.Todo{}, err
 	}
 	var todos []*model.Todo
 	for cur.Next(ctx) {
 		todo := TodoType{}
 		err := cur.Decode(&todo)
 		if err != nil {
-			log.Fatal(err)
+			return todos, err
 		}
 		todos = append(todos, &model.Todo{
 			ID:     todo.ID.Hex(),
@@ -57,5 +57,5 @@ func All(ctx context.Context, userID string) []*model.Todo {
 			UserID: todo.UserID.Hex(),
 		})
 	}
-	return todos
+	return todos, nil
 }

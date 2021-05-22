@@ -9,6 +9,7 @@ import (
 
 	"github.com/WanDmean/graphql-go/graph/generated"
 	"github.com/WanDmean/graphql-go/graph/model"
+	"github.com/WanDmean/graphql-go/src/auth"
 )
 
 func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateUser) (*model.User, error) {
@@ -16,7 +17,11 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateUse
 }
 
 func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	user := auth.ForContext(ctx)
+	if user == nil {
+		return &model.User{}, fmt.Errorf("access denied")
+	}
+	return user, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
