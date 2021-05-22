@@ -14,7 +14,7 @@ func Save(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
 	if err != nil {
 		return &model.Todo{}, fmt.Errorf("invalid object id")
 	}
-	res, err := database.Todos.InsertOne(ctx, &TodoType{
+	res, err := database.Todos.InsertOne(ctx, &Todo{
 		UserID: UserObjectID,
 		Done:   input.Done,
 		Text:   input.Text,
@@ -35,7 +35,7 @@ func All(ctx context.Context, userID string) ([]*model.Todo, error) {
 	if err != nil {
 		return []*model.Todo{}, fmt.Errorf("invalid object id")
 	}
-	cur, err := database.Todos.Find(ctx, &TodoType{
+	cur, err := database.Todos.Find(ctx, &Todo{
 		UserID: UserObjectID,
 	})
 	if err != nil {
@@ -43,7 +43,7 @@ func All(ctx context.Context, userID string) ([]*model.Todo, error) {
 	}
 	var todos []*model.Todo
 	for cur.Next(ctx) {
-		todo := TodoType{}
+		todo := Todo{}
 		err := cur.Decode(&todo)
 		if err != nil {
 			return todos, err

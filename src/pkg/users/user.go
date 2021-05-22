@@ -8,23 +8,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func Save(ctx context.Context, input Register) (*UserType, error) {
+func Save(ctx context.Context, input Register) (*User, error) {
 	/* hash password before insert into database */
 	hashedPassword, err := HashPassword(input.Password)
 	if err != nil {
-		return &UserType{}, err
+		return &User{}, err
 	}
 	/* save input into database */
-	res, err := database.Users.InsertOne(ctx, &UserType{
+	res, err := database.Users.InsertOne(ctx, &User{
 		Name:     input.Name,
 		Email:    input.Email,
 		Avatar:   input.Avatar,
 		Password: hashedPassword,
 	})
 	if err != nil {
-		return &UserType{}, err
+		return &User{}, err
 	}
-	return &UserType{
+	return &User{
 		ID:     res.InsertedID.(primitive.ObjectID),
 		Name:   input.Name,
 		Email:  input.Email,
@@ -32,17 +32,17 @@ func Save(ctx context.Context, input Register) (*UserType, error) {
 	}, nil
 }
 
-func FindById(ctx context.Context, id string) (*UserType, error) {
+func FindById(ctx context.Context, id string) (*User, error) {
 	ObjectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return &UserType{}, fmt.Errorf("invalid object id")
+		return &User{}, fmt.Errorf("invalid object id")
 	}
-	res := database.Users.FindOne(ctx, &UserType{
+	res := database.Users.FindOne(ctx, &User{
 		ID: ObjectID,
 	})
-	user := UserType{}
+	user := User{}
 	res.Decode(&user)
-	return &UserType{
+	return &User{
 		ID:       user.ID,
 		Name:     user.Name,
 		Email:    user.Email,
@@ -50,13 +50,13 @@ func FindById(ctx context.Context, id string) (*UserType, error) {
 	}, nil
 }
 
-func FindByEmail(ctx context.Context, email string) *UserType {
-	res := database.Users.FindOne(ctx, &UserType{
+func FindByEmail(ctx context.Context, email string) *User {
+	res := database.Users.FindOne(ctx, &User{
 		Email: email,
 	})
-	user := UserType{}
+	user := User{}
 	res.Decode(&user)
-	return &UserType{
+	return &User{
 		ID:       user.ID,
 		Name:     user.Name,
 		Email:    user.Email,
