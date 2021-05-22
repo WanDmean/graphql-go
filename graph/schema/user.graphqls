@@ -2,11 +2,13 @@ type User {
   id: ID!
   name: String!
   email: String!
+  avatar: String!
 }
 
 input UpdateUser {
   name: String!
   email: String!
+  avatar: String!
 }
 
 type Query {

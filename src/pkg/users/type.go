@@ -7,4 +7,5 @@ type UserType struct {
 	Name     string             `json:"name" bson:"name,omitempty"`
 	Email    string             `json:"email" bson:"email,omitempty"`
 	Password string             `json:"password" bson:"password,omitempty"`
+	Avatar   string             `json:"avatar" bson:"avatar,omitempty"`
 }
