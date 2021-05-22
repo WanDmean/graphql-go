@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func Save(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
+func Save(ctx context.Context, input model.NewTodo) *model.Todo {
 	collection := database.GetCollection("todos")
 	UserObjectID, err := primitive.ObjectIDFromHex(input.UserID)
 	if err != nil {
@@ -28,10 +28,10 @@ func Save(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
 		Text:   input.Text,
 		Done:   input.Done,
 		UserID: input.UserID,
-	}, nil
+	}
 }
 
-func All(ctx context.Context, userID string) ([]*model.Todo, error) {
+func All(ctx context.Context, userID string) []*model.Todo {
 	collection := database.GetCollection("todos")
 	UserObjectID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
@@ -57,5 +57,5 @@ func All(ctx context.Context, userID string) ([]*model.Todo, error) {
 			UserID: todo.UserID.Hex(),
 		})
 	}
-	return todos, nil
+	return todos
 }

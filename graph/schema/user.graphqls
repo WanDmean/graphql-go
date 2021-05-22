@@ -2,32 +2,17 @@ type User {
   id: ID!
   name: String!
   email: String!
-  password: String!
 }
 
-input NewUser {
+input UpdateUser {
   name: String!
   email: String!
-  password: String!
-}
-
-input Login {
-  email: String!
-  password: String!
-}
-
-input Register {
-  name: String!
-  email: String!
-  password: String!
 }
 
 type Query {
-  user(id: ID!): User!
-  login(input: Login!): String!
+  user: User!
 }
 
 type Mutation {
-  register(input: Register!): String!
-  createUser(input: NewUser!): User!
+  updateUser(input: UpdateUser!): User!
 }

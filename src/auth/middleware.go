@@ -32,11 +32,7 @@ func Middleware() func(http.Handler) http.Handler {
 				return
 			}
 			// create user and check if user exists in db
-			user, err := users.FindById(r.Context(), userId)
-			if err != nil {
-				next.ServeHTTP(w, r)
-				return
-			}
+			user := users.FindById(r.Context(), userId)
 			// put it in context
 			ctx := context.WithValue(r.Context(), userCtxKey, &user)
 

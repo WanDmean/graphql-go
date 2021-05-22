@@ -11,9 +11,9 @@ import (
 )
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	return todos.Save(ctx, input)
+	return todos.Save(ctx, input), nil
 }
 
 func (r *queryResolver) Todos(ctx context.Context, userID string) ([]*model.Todo, error) {
-	return todos.All(ctx, userID)
+	return todos.All(ctx, userID), nil
 }

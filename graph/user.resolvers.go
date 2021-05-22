@@ -5,26 +5,18 @@ package graph
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/WanDmean/graphql-go/graph/generated"
 	"github.com/WanDmean/graphql-go/graph/model"
-	"github.com/WanDmean/graphql-go/src/pkg/users"
 )
 
-func (r *mutationResolver) Register(ctx context.Context, input model.Register) (string, error) {
-	return users.Register(ctx, input)
+func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateUser) (*model.User, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
-	return users.Save(ctx, input)
-}
-
-func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
-	return users.FindById(ctx, id)
-}
-
-func (r *queryResolver) Login(ctx context.Context, input model.Login) (string, error) {
-	return users.Login(ctx, input)
+func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 // Mutation returns generated.MutationResolver implementation.
