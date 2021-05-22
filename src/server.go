@@ -12,12 +12,19 @@ import (
 	"github.com/WanDmean/graphql-go/src/config"
 	"github.com/WanDmean/graphql-go/src/database"
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 )
 
 func main() {
 	/* create router with chi */
-	router := chi.NewRouter()
+	var router = new(chi.Mux)
+	router = chi.NewRouter()
 
+	/* sugguss middleware stack from chi */
+	router.Use(middleware.RequestID)
+	router.Use(middleware.RealIP)
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
 	/* use auth middleware */
 	router.Use(auth.Middleware())
 
