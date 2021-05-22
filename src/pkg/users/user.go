@@ -9,14 +9,13 @@ import (
 )
 
 func Save(ctx context.Context, input Register) (*UserType, error) {
-	collection := database.GetCollection("users")
 	/* hash password before insert into database */
 	hashedPassword, err := HashPassword(input.Password)
 	if err != nil {
 		return &UserType{}, err
 	}
 	/* save input into database */
-	res, err := collection.InsertOne(ctx, &UserType{
+	res, err := database.Users.InsertOne(ctx, &UserType{
 		Name:     input.Name,
 		Email:    input.Email,
 		Avatar:   input.Avatar,
@@ -34,12 +33,11 @@ func Save(ctx context.Context, input Register) (*UserType, error) {
 }
 
 func FindById(ctx context.Context, id string) (*UserType, error) {
-	collection := database.GetCollection("users")
 	ObjectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return &UserType{}, fmt.Errorf("invalid object id")
 	}
-	res := collection.FindOne(ctx, &UserType{
+	res := database.Users.FindOne(ctx, &UserType{
 		ID: ObjectID,
 	})
 	user := UserType{}
@@ -53,8 +51,7 @@ func FindById(ctx context.Context, id string) (*UserType, error) {
 }
 
 func FindByEmail(ctx context.Context, email string) *UserType {
-	collection := database.GetCollection("users")
-	res := collection.FindOne(ctx, &UserType{
+	res := database.Users.FindOne(ctx, &UserType{
 		Email: email,
 	})
 	user := UserType{}

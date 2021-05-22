@@ -10,12 +10,11 @@ import (
 )
 
 func Save(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	collection := database.GetCollection("todos")
 	UserObjectID, err := primitive.ObjectIDFromHex(input.UserID)
 	if err != nil {
 		return &model.Todo{}, fmt.Errorf("invalid object id")
 	}
-	res, err := collection.InsertOne(ctx, &TodoType{
+	res, err := database.Todos.InsertOne(ctx, &TodoType{
 		UserID: UserObjectID,
 		Done:   input.Done,
 		Text:   input.Text,
@@ -32,12 +31,11 @@ func Save(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
 }
 
 func All(ctx context.Context, userID string) ([]*model.Todo, error) {
-	collection := database.GetCollection("todos")
 	UserObjectID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return []*model.Todo{}, fmt.Errorf("invalid object id")
 	}
-	cur, err := collection.Find(ctx, &TodoType{
+	cur, err := database.Todos.Find(ctx, &TodoType{
 		UserID: UserObjectID,
 	})
 	if err != nil {

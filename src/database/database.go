@@ -10,7 +10,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var Client *mongo.Client
+var (
+	Users *mongo.Collection
+	Todos *mongo.Collection
+)
 
 func InitDB() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -19,10 +22,8 @@ func InitDB() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	Client = client
-}
-
-func GetCollection(name string) *mongo.Collection {
-	collection := Client.Database(config.DATABASE).Collection(name)
-	return collection
+	db := client.Database(config.DATABASE)
+	/* create collection */
+	Users = db.Collection("users")
+	Todos = db.Collection("todos")
 }
