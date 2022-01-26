@@ -26,7 +26,7 @@ func main() {
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 	/* use auth middleware */
-	router.Use(auth.Middleware())
+	router.Use(auth.Middleware)
 
 	/* init database */
 	database.InitDB()
